@@ -1396,11 +1396,933 @@ union TemporaryData {
 </p>
 </details>
 
+# Bài 8: Memory layout
+<details><summary>Chi tiết</summary>   
+<p> 
+  
+## Khái niệm
+<details><summary>Chi tiết</summary>   
+<p>
+	
+#### Trong ngôn ngữ lập trình C, bộ nhớ của chương trình thường được phân chia thành các phân vùng khác nhau, mỗi phân vùng có mục đích và quy tắc sử dụng riêng. Dưới đây là một số phân vùng nhớ quan trọng trong C:
+#### Text Segment
+**Text Segment** là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để lưu trữ mã máy của chương trình. Cụ thể, Text Segment chứa mã máy đã được biên dịch từ mã nguồn của chương trình và được CPU thực thi để thực hiện các hành động quy định trong chương trình.
+#### Một số đặc điểm:
+#### Mã máy:
++ Chứa mã máy, tức là tập hợp các lệnh thực thi được CPU hiểu được.
++ Mã máy được tạo ra thông qua quá trình biên dịch từ mã nguồn của chương trình.
+#### Quyền truy cập:
+Text Segment thường có quyền đọc và thực thi, nhưng không có quyền ghi. điều này ngăn chặn chương trình việc tự sửa đổi mã máy của nó.
+#### Kích thước cố định:
++ Kích thước của Text Segment thường là cố định khi chương trình được biên dịch.
++ Điều này giúp hệ điều hành và CPU dễ dàng quản lý vùng nhớ này.
+#### Lưu Trữ Code và Hằng Số:
++ Bao gồm cả mã máy của các hàm và các hằng số.
++ Các hàm được gọi từ các phần khác của chương trình sẽ có địa chỉ trong Text Segment.
+
+### Data Segment
+**Data Segment** là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để lưu trữ dữ liệu tĩnh của chương trình. Dữ liệu tĩnh bao gồm biến toàn cục và biến tĩnh (static), tức là các biến mà không phụ thuộc vào thời gian chạy của chương trình. 
+**Một số đặc điểm:**
+**Biến Toàn Cục (Global Variables):**
++ Chứa giá trị của các biến toàn cục được khai báo trong chương trình.
++ Các biến này có thể được truy cập từ bất kỳ hàm nào trong chương trình.
+#### Biến Tĩnh (Static Variables):
++ Chứa giá trị của các biến tĩnh, nghĩa là biến được khai báo với từ khóa static.
++ Có thể được truy cập chỉ trong phạm vi của hàm mà chúng được khai báo.
+**Initialized Data Segment (Dữ liệu Đã Khởi Tạo):**
++ Chứa giá trị của các biến toàn cục và biến tĩnh được khởi tạo với giá trị ban đầu.
++ Dữ liệu này được sao chép từ bộ nhớ của chương trình thực thi.
+**Uninitialized Data Segment (Dữ liệu Chưa Khởi Tạo):**
++ Chứa giá trị mặc định của các biến toàn cục và biến tĩnh mà không cần khởi tạo giá trị ban đầu.
++ Dữ liệu trong phân vùng này thường được xác định bởi giá trị 0.
+**Quyền truy cập:** Data Segment thường có quyền đọc và ghi, nghĩa là dữ liệu có thể được đọc và sửa đổi trong quá trình thực thi của chương trình.
+**Kích thước cố định:** Kích thước của Data Segment có thể thay đổi trong quá trình thực thi của chương trình khi các biến được khởi tạo hoặc giải phóng.
+### Heap
+**Heap** là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để cấp phát bộ nhớ động. Các biến được cấp phát trên heap không có kích thước xác định tại thời điểm biên dịch và có thể được quản lý động trong quá trình thực thi của chương trình.
+#### Một số đặc điểm:
+**Cấp phát động:**
++ Heap được sử dụng để cấp phát bộ nhớ động trong quá trình thực thi của chương trình.
++ Điều này cho phép chương trình tạo ra và giải phóng bộ nhớ theo nhu cầu, thích ứng với sự biến đổi của dữ liệu trong quá trình chạy.
++ **Quyền truy cập:** Bộ nhớ trên heap thường có quyền đọc và ghi, nghĩa là dữ liệu có thể được đọc và sửa đổi trong suốt thời gian chương trình chạy.
++ **Cấp Phát và Giải** Phóng Bộ Nhớ: Các hàm như malloc(), calloc(), realloc(), và free() được sử dụng để cấp phát và giải phóng bộ nhớ trên heap.
++ **Kích Thước Thay Đổi:** Kích thước của heap có thể thay đổi trong quá trình thực thi của chương trình, tùy thuộc vào các thao tác cấp phát và giải phóng bộ nhớ.
++ Không Giữ Giá Trị Mặc Định: Bộ nhớ trên heap không giữ giá trị mặc định như trong Data Segment. Nếu không được khởi tạo, giá trị của biến trên heap sẽ không xác định.
+#### Ví dụ cấp phát động:
+```bash
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    // Cấp phát bộ nhớ động cho một biến kiểu int
+    int *dynamicVar = (int *)malloc(sizeof(int));
+
+    if (dynamicVar != NULL) {
+        // Gán giá trị cho biến trên heap
+        *dynamicVar = 42;
+
+        // In giá trị
+        printf("Value on heap: %d\n", *dynamicVar);
+
+        // Giải phóng bộ nhớ trên heap
+        free(dynamicVar);
+    }
+
+    return 0;
+}
+
+ ```
 
 
+### Stack
+**Stack** là một phần quan trọng của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính. Nó được sử dụng để lưu trữ các biến cục bộ, các giá trị trả về từ hàm, địa chỉ trả về và một số thông tin khác liên quan đến thực thi của chương trình. 
+#### Một số đặc điểm:
++ **LIFO:** Stack hoạt động theo nguyên tắc LIFO, nghĩa là phần tử cuối cùng được thêm vào sẽ là phần tử đầu tiên được lấy ra.
++ **Các biến cục bộ:** Chứa các biến cục bộ, tức là các biến được khai báo trong các hàm và chỉ có giá trị trong phạm vi của hàm đó.
++ **Kích thước cố định:** Tùy thuộc vào hệ điều hành khác nhau
++ **Địa chỉ trả về:** Khi một hàm được gọi, địa chỉ trả về (return address) được đẩy vào ngăn xếp để theo dõi nơi chương trình sẽ tiếp tục sau khi hàm kết thúc thực thi.
++ **Thực hiện gọi hàm và trả về:** Khi một hàm được gọi, các giá trị và địa chỉ quan trọng liên quan đến hàm đó được đẩy vào ngăn xếp. Sau khi hàm kết thúc, những giá trị này được lấy ra để quay trở lại thực thi chương trình.
++ **Khối lệnh ( Frame):** Mỗi hàm khi được gọi tạo ra một khối lệnh (frame) trên ngăn xếp, chứa các biến cục bộ và các giá trị khác liên quan đến hàm.
++ **Stack pointer:** Con trỏ ngăn xếp (stack pointer) giữ địa chỉ hiện tại của stack và được cập nhật liên tục khi dữ liệu được đẩy vào hoặc lấy ra.
++ **Stack** là một cơ chế quan trọng trong quá trình thực thi chương trình và thường được sử dụng để quản lý luồng thực thi, gọi hàm, và theo dõi các biến cục bộ. Các ngôn ngữ lập trình thường sử dụng ngăn xếp để triển khai thực thi hàm và quản lý các biến cục bộ.
+### Memory - mapped Segment
+**Memory-mapped segment** là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để tương tác với các thiết bị ngoại vi thông qua các địa chỉ bộ nhớ. Thông thường, các thiết bị ngoại vi như cổng vào/ra (I/O ports) và thanh ghi của các thiết bị được ánh xạ trực tiếp vào không gian địa chỉ bộ nhớ của chương trình.
+**Một số đặc điểm:**
++ Tương tác với thiết bị ngoại vi: Memory-mapped segment cho phép chương trình tương tác với các thiết bị ngoại vi bằng cách truy cập địa chỉ bộ nhớ tương ứng với các thanh ghi và cổng I/O của các thiết bị đó.
++ Địa chỉ bộ nhớ ánh xạ: Các địa chỉ bộ nhớ của các thanh ghi và cổng I/O của các thiết bị ngoại vi được ánh xạ vào không gian địa chỉ bộ nhớ của chương trình.
++ Quyền truy cập: Memory-mapped segment thường có thể có quyền đọc và ghi để cho phép chương trình gửi dữ liệu đến thiết bị và đọc dữ liệu từ thiết bị.
++ Giao tiếp với thiết bị ngoại vi: Thông qua Memory-mapped segment, chương trình có thể gửi lệnh và nhận dữ liệu từ các thiết bị ngoại vi, như cổng COM, bàn phím, màn hình và các thiết bị khác.
++ Sử dụng trong ngôn ngữ mã máy và assembly: Memory-mapped segment thường được sử dụng nhiều trong ngôn ngữ máy và ngôn ngữ gần với phần cứng để thực hiện các thao tác gần với phần cứng của hệ thống.
++ Điều khiển thiết bị: Ánh xạ địa chỉ bộ nhớ của các thanh ghi và cổng I/O của thiết bị ngoại vi cho phép chương trình kiểm soát và điều khiển các thiết bị ngoại vi.
+**Lưu ý** rằng sử dụng Memory-mapped segment đôi khi yêu cầu quyền hệ điều hành và có thể chỉ có sẵn trong môi trường thực thi nào đó (ví dụ như hệ điều hành Unix-like).
+  </p>
+</details>
+
+## Stack và Heap
+<details><summary>Chi tiết</summary>   
+<p> 
+  
++ Bộ nhớ Heap và bộ nhớ Stack bản chất đều cùng là vùng nhớ được tạo ra và lưu trữ trong RAM khi chương trình được thực thi.
++ Bộ nhớ Stack được dùng để lưu trữ các biến cục bộ trong hàm, tham số truyền vào... Truy cập vào bộ nhớ này rất nhanh và được thực thi khi chương trình được biên dịch.
++ Bộ nhớ Heap được dùng để lưu trữ vùng nhớ cho những biến con trỏ được cấp phát động bởi các hàm malloc - calloc - realloc (trong C).
+
+	**Kích thước vùng nhớ:**
++ Stack: kích thước của bộ nhớ Stack là cố định, tùy thuộc vào từng hệ điều hành, ví dụ hệ điều hành Windows là 1 MB, hệ điều hành Linux là 8 MB (lưu ý là con số có thể khác tùy thuộc vào kiến trúc hệ điều hành của bạn).
++ Heap: kích thước của bộ nhớ Heap là không cố định, có thể tăng giảm do đó đáp ứng được nhu cầu lưu trữ dữ liệu của chương trình.
+
+	**Đặc điểm vùng nhớ:**
++ Stack: vùng nhớ Stack được quản lý bởi hệ điều hành, dữ liệu được lưu trong Stack sẽ tự động hủy khi hàm thực hiện xong công việc của mình.
++ Heap: Vùng nhớ Heap được quản lý bởi lập trình viên (trong C hoặc C++), dữ liệu trong Heap sẽ không bị hủy khi hàm thực hiện xong, điều đó có nghĩa bạn phải tự tay hủy vùng nhớ bằng câu lệnh free (trong C), và delete hoặc delete [] (trong C++), nếu không sẽ xảy ra hiện tượng rò rỉ bộ nhớ. 
+
+	**Vấn đề lỗi xảy ra với vùng nhớ:**
++ Stack: bởi vì bộ nhớ Stack cố định nên nếu chương trình bạn sử dụng quá nhiều bộ nhớ vượt quá khả năng lưu trữ của Stack chắc chắn sẽ xảy ra tình trạng tràn bộ nhớ Stack (Stack overflow), các trường hợp xảy ra như bạn khởi tạo quá nhiều biến cục bộ, hàm đệ quy vô hạn,...
+	**Ví dụ tràn bộ nhớ stack khi gọi hàm đệ quy vô hạn:**
+ ```bash
+int foo(int x){
+    printf("De quy khong gioi han\n");
+    return foo(x);
+}
+```
+**Heap:**  Nếu bạn liên tục cấp phát vùng nhớ mà không giải phóng thì sẽ bị lỗi tràn vùng nhớ Heap (Heap overflow). Nếu bạn khởi tạo một vùng nhớ quá lớn mà vùng nhớ Heap không thể lưu trữ một lần được sẽ bị lỗi khởi tạo vùng nhớ Heap thất bại.
+**Ví dụ trường hợp khởi tạo vùng nhớ Heap quá lớn:**
+```bash
+int *A = (int *)malloc(18446744073709551615);
+```
 
 
+</p>
+</details>
+
+</p>
+</details>
+
+# Bài 9: JSON
+<details><summary>Chi tiết</summary>   
+<p> 
+
+  
+## Khái niệm 
  
++ JSON là viết tắt của "JavaScript Object Notation" (Ghi chú về Đối tượng JavaScript). Đây là một định dạng truyền tải dữ liệu phổ biến trong lập trình và giao tiếp giữa các máy chủ và trình duyệt web, cũng như giữa các hệ thống khác nhau.
++ JSON được thiết kế để dễ đọc và dễ viết cho con người, cũng như dễ dàng để phân tích và tạo ra cho máy tính. Nó sử dụng một cú pháp nhẹ dựa trên cặp key - value, tương tự như các đối tượng và mảng trong JavaScript. Mỗi đối tượng JSON bao gồm một tập hợp các cặp "key" và "value", trong khi mỗi mảng JSON là một tập hợp các giá trị.
+### Các định dạng 
+```bash
+1
+{
+  "name": “John Doe",
+  "age": 30.1234,
+  "city": "New York",
+  "isStudent": true,
+  "grades": [85, 90, 78]
+}
+
+2
+typedef enum {
+    JSON_NULL,
+    JSON_BOOLEAN,
+    JSON_NUMBER,
+    JSON_STRING,
+    JSON_ARRAY,
+    JSON_OBJECT
+} JsonType
+3
+[
+  {
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York",
+    "occupation": "Software Engineer",
+    "isStudent": false
+  },
+  {
+    "name": "Jane Smith",
+    "age": null,
+    "city": "Los Angeles",
+    "contact": {
+      "email": "jane.smith@example.com",
+      "phone": "555-1234"
+    }
+  },
+  {
+    "name": "Bob Johnson",
+    "age": 35,
+    "city": "Chicago"
+  }
+]
+
+ ví dụ
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+
+
+
+typedef enum {
+    JSON_NULL,
+    JSON_BOOLEAN,
+    JSON_NUMBER,
+    JSON_STRING,
+    JSON_ARRAY,
+    JSON_OBJECT
+} JsonType;
+
+
+typedef struct JsonValue {
+    JsonType type;
+    union {
+        int boolean;
+        double number;
+        char *string;
+        struct {
+            struct JsonValue *values;
+            size_t count;
+        } array;
+        struct {
+            char **keys;
+            struct JsonValue *values;
+            size_t count;
+        } object;
+    } value;
+} JsonValue;
+
+
+
+JsonValue *parse_json(const char **json);
+
+void free_json_value(JsonValue *json_value);
+
+static void skip_whitespace(const char **json) {
+    while (isspace(**json)) {
+        (*json)++;
+    }
+}
+
+JsonValue *parse_null(const char **json) {
+    skip_whitespace(json);
+    if (strncmp(*json, "null", 4) == 0) {
+        JsonValue *value = (JsonValue *) malloc(sizeof(JsonValue));
+        value->type = JSON_NULL;
+        *json += 4;
+        return value;
+    }
+    return NULL;
+}
+
+JsonValue *parse_boolean(const char **json) {
+    skip_whitespace(json);
+    JsonValue *value = (JsonValue *) malloc(sizeof(JsonValue));
+    if (strncmp(*json, "true", 4) == 0) {
+        value->type = JSON_BOOLEAN;
+        value->value.boolean = true;
+        *json += 4;
+    } else if (strncmp(*json, "false", 5) == 0) {
+        value->type = JSON_BOOLEAN;
+        value->value.boolean = false;
+        *json += 5;
+    } else {
+        free(value);
+        return NULL;
+    }
+    return value;
+}
+
+JsonValue *parse_number(const char **json) {
+    skip_whitespace(json);
+    char *end;
+
+
+    double num = strtod(*json, &end);
+    if (end != *json) {
+        JsonValue *value = (JsonValue *) malloc(sizeof(JsonValue));
+        value->type = JSON_NUMBER;
+        value->value.number = num;
+        *json = end;
+        return value;
+    }
+    return NULL;
+}
+
+JsonValue *parse_string(const char **json) {
+    skip_whitespace(json);
+
+
+    if (**json == '\"') {
+        (*json)++;
+        const char *start = *json;
+        while (**json != '\"' && **json != '\0') {
+            (*json)++;
+        }
+        if (**json == '\"') {
+            size_t length = *json - start; // 3
+            char *str = (char *) malloc((length + 1) * sizeof(char));
+            strncpy(str, start, length);
+            str[length] = '\0';
+
+
+            JsonValue *value = (JsonValue *) malloc(sizeof(JsonValue));
+            value->type = JSON_STRING;
+            value->value.string = str;
+            (*json)++;
+            return value;
+        }
+    }
+    return NULL;
+}
+
+
+
+JsonValue *parse_array(const char **json) {
+    skip_whitespace(json);
+    if (**json == '[') {
+        (*json)++;
+        skip_whitespace(json);
+
+        JsonValue *array_value = (JsonValue *)malloc(sizeof(JsonValue));
+        array_value->type = JSON_ARRAY;
+        array_value->value.array.count = 0;
+        array_value->value.array.values = NULL;
+
+        /*
+        double arr[2] = {};
+        arr[0] = 30;
+        arr[1] = 70;
+        */
+
+        while (**json != ']' && **json != '\0') {
+            JsonValue *element = parse_json(json); // 70
+            if (element) {
+                array_value->value.array.count++;
+                array_value->value.array.values = (JsonValue *)realloc(array_value->value.array.values, array_value->value.array.count * sizeof(JsonValue));
+                array_value->value.array.values[array_value->value.array.count - 1] = *element;
+                free(element);
+            } else {
+                break;
+            }
+            skip_whitespace(json);
+            if (**json == ',') {
+                (*json)++;
+            }
+        }
+        if (**json == ']') {
+            (*json)++;
+            return array_value;
+        } else {
+            free_json_value(array_value);
+            return NULL;
+        }
+    }
+    return NULL;
+}
+
+JsonValue *parse_object(const char **json) {
+    skip_whitespace(json);
+    if (**json == '{') {
+        (*json)++;
+        skip_whitespace(json);
+
+        JsonValue *object_value = (JsonValue *)malloc(sizeof(JsonValue));
+        object_value->type = JSON_OBJECT;
+        object_value->value.object.count = 0;
+        object_value->value.object.keys = NULL;
+        object_value->value.object.values = NULL;
+
+
+
+        while (**json != '}' && **json != '\0') {
+            JsonValue *key = parse_string(json);
+            if (key) {
+                skip_whitespace(json);
+                if (**json == ':') {
+                    (*json)++;
+                    JsonValue *value = parse_json(json);
+                    if (value) {
+                        object_value->value.object.count++;
+                        object_value->value.object.keys = (char **)realloc(object_value->value.object.keys, object_value->value.object.count * sizeof(char *));
+                        object_value->value.object.keys[object_value->value.object.count - 1] = key->value.string;
+
+                        object_value->value.object.values = (JsonValue *)realloc(object_value->value.object.values, object_value->value.object.count * sizeof(JsonValue));
+                        object_value->value.object.values[object_value->value.object.count - 1] = *value;
+                        free(value);
+                    } else {
+                        free_json_value(key);
+                        break;
+                    }
+                } else {
+                    free_json_value(key);
+                    break;
+                }
+            } else {
+                break;
+            }
+            skip_whitespace(json);
+            if (**json == ',') {
+                (*json)++;
+            }
+        }
+        if (**json == '}') {
+            (*json)++;
+            return object_value;
+        } else {
+            free_json_value(object_value);
+            return NULL;
+        }
+    }
+    return NULL;
+}
+
+
+JsonValue *parse_json(const char **json) { 
+    while (isspace(**json)) {
+        (*json)++;
+    }
+
+
+
+    switch (**json) {
+        case 'n':
+            return parse_null(json);
+        case 't':
+        case 'f':
+            return parse_boolean(json);
+        case '\"':
+            return parse_string(json);
+        case '[':
+            return parse_array(json);
+        case '{':
+            return parse_object(json);
+        default:
+            if (isdigit(**json) || **json == '-') {
+                return parse_number(json);
+            } else {
+                // Lỗi phân tích cú pháp
+                return NULL;
+            }
+    }
+}
+
+
+
+////////////
+
+
+
+
+/////////////
+
+void free_json_value(JsonValue *json_value) {
+    if (json_value == NULL) {
+        return;
+    }
+
+    switch (json_value->type) {
+        case JSON_STRING:
+            free(json_value->value.string);
+            break;
+
+        case JSON_ARRAY:
+            for (size_t i = 0; i < json_value->value.array.count; i++) {
+                free_json_value(&json_value->value.array.values[i]);
+            }
+            free(json_value->value.array.values);
+            break;
+
+        case JSON_OBJECT:
+            for (size_t i = 0; i < json_value->value.object.count; i++) {
+                free(json_value->value.object.keys[i]);
+                free_json_value(&json_value->value.object.values[i]);
+            }
+            free(json_value->value.object.keys);
+            free(json_value->value.object.values);
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+
+void test(JsonValue* json_value){
+    if (json_value != NULL && json_value->type == JSON_OBJECT) {
+        // Truy cập giá trị của các trường trong đối tượng JSON
+        size_t num_fields = json_value->value.object.count;
+        size_t num_fields2 = json_value->value.object.values->value.object.count;
+        for (size_t i = 0; i < num_fields; ++i) {
+
+            char* key = json_value->value.object.keys[i];
+            JsonValue* value = &json_value->value.object.values[i];
+
+            JsonType type = (int)(json_value->value.object.values[i].type);
+
+
+            if(type == JSON_STRING){
+                printf("%s: %s\n", key, value->value.string);
+            }
+
+            if(type == JSON_NUMBER){
+                printf("%s: %f\n", key, value->value.number);
+            }
+
+            if(type == JSON_BOOLEAN){
+                printf("%s: %s\n", key, value->value.boolean ? "True":"False");
+            }
+
+            if(type == JSON_OBJECT){
+                printf("%s: \n", key);
+                test(value);
+            }
+
+            if(type == JSON_ARRAY){
+                printf("%s: ", key);
+                for (int i = 0; i < value->value.array.count; i++)
+                {
+                   test(value->value.array.values + i);
+                } 
+                printf("\n");
+            }
+
+  
+        }
+
+     
+    }
+    else 
+    {
+            if(json_value->type == JSON_STRING){
+                printf("%s ", json_value->value.string);
+            }
+
+            if(json_value->type == JSON_NUMBER){
+                printf("%f ", json_value->value.number);
+            }
+
+            if(json_value->type == JSON_BOOLEAN){
+                printf("%s ", json_value->value.boolean ? "True":"False");
+            }
+
+            if(json_value->type == JSON_OBJECT){
+                printf("%s: \n", json_value->value.object.keys);
+                test(json_value->value.object.values);
+                           
+            }
+    }
+
+}
+
+
+
+
+int main(int argc, char const *argv[])
+{
+     // Chuỗi JSON đầu vào
+    
+    const char* json_str = "{"
+                        "\"1001\":{"
+                          "\"SoPhong\":3,"
+                          "\"NguoiThue\":{"
+                            "\"Ten\":\"Nguyen Van A\","
+                            "\"CCCD\":\"1920517781\","
+                            "\"Tuoi\":26,"
+                            "\"ThuongTru\":{"
+                              "\"Duong\":\"73 Ba Huyen Thanh Quan\","
+                              "\"Phuong_Xa\":\"Phuong 6\","
+                              "\"Tinh_TP\":\"Ho Chi Minh\""
+                            "}"
+                          "},"
+                          "\"SoNguoiO\":{"
+                            "\"1\":\"Nguyen Van A\","
+                            "\"2\":\"Nguyen Van B\","
+                            "\"3\":\"Nguyen Van C\""
+                          "},"
+                          "\"TienDien\": [24, 56, 98],"
+                          "\"TienNuoc\":30.000"
+                        "},"
+                        "\"1002\":{"
+                          "\"SoPhong\":5,"
+                          "\"NguoiThue\":{"
+                            "\"Ten\":\"Phan Hoang Trung\","
+                            "\"CCCD\":\"012345678912\","
+                            "\"Tuoi\":24,"
+                            "\"ThuongTru\":{"
+                              "\"Duong\":\"53 Le Dai Hanh\","
+                              "\"Phuong_Xa\":\"Phuong 11\","
+                              "\"Tinh_TP\":\"Ho Chi Minh\""
+                            "}"
+                          "},"
+                          "\"SoNguoiO\":{"
+                            "\"1\":\"Phan Van Nhat\","
+                            "\"2\":\"Phan Van Nhi\","
+                            "\"2\":\"Phan Van Tam\","
+                            "\"3\":\"Phan Van Tu\""
+                          "},"
+                          "\"TienDien\":23.000,"
+                          "\"TienNuoc\":40.000"
+                        "}"
+                      "}";
+    
+
+    // Phân tích cú pháp chuỗi JSON
+    JsonValue* json_value = parse_json(&json_str);
+
+
+
+   test(json_value);
+
+    // Kiểm tra kết quả phân tích cú pháp
+
+       // Giải phóng bộ nhớ được cấp phát cho JsonValue
+    free_json_value(json_value);
+    
+    
+
+        //printf("test = %x", '\"');
+
+       // hienthi(5);
+    
+    return 0;
+}
+
+
+
+
+```
+
+</p>
+</details>
+
+# Bài 10: Linked List
+<details><summary>Chi tiết</summary>   
+<p> 
+	
+## Khái niệm
+**Linked list** là một cấu trúc dữ liệu trong lập trình máy tính, được sử dụng để tổ chức và lưu trữ dữ liệu. Một linked list bao gồm một chuỗi các "nút" (nodes), mỗi nút chứa một giá trị dữ liệu và một con trỏ (pointer) đến nút tiếp theo trong chuỗi.
+**Có hai loại linked list chính:**
++ Singly Linked List (Danh sách liên kết đơn): Mỗi nút chỉ chứa một con trỏ đến nút tiếp theo trong chuỗi.
++ Doubly Linked List (Danh sách liên kết đôi): Mỗi nút chứa hai con trỏ, một trỏ đến nút tiếp theo và một trỏ đến nút trước đó.
++ Một linked list cung cấp một cách linh hoạt để thêm, xóa và chèn các phần tử mà không cần phải di chuyển toàn bộ dãy số như mảng. Tuy nhiên, nó cũng có một số nhược điểm, như việc cần thêm một con trỏ cho mỗi nút, tăng độ phức tạp của bộ nhớ và có thể dẫn đến hiệu suất kém hơn trong một số trường hợp so với mảng.
+**Dưới đây là định nghĩa 1 node trong singly linked list:**
+  
+ ```bash
+
+struct Node {
+    int data;         // Dữ liệu của nút
+    Node* next;       // Con trỏ đến nút tiếp theo trong danh sách
+};
+```
+
+
+**Một số thao tác trong list:**
+
+ ```bash
+	Khởi tạo một node:
+node *createNode(int value)
+{
+    node *ptr = (node*)malloc(sizeof(node));
+    ptr->value = value;
+    ptr->next = NULL;
+    return ptr;
+}
+```
+
+**Chèn một node vào cuối list:**
+ ```bash
+void push_back(node** array, int value)
+{
+    node *temp, *p;
+    temp = createNode(value);
+    
+    p = *array;          // use p instead of array because we are using pointer, use array will change the structure of linkedlist
+
+    if (*array == NULL)   // if array doesn't have any node yet
+    {
+        
+        *array = temp;
+    }
+    else                // if array has some node
+    {      
+        while (p->next != NULL) // which mean the current node is not the last node
+        {
+            p = p->next;    // check next node until it a last node
+            
+        }
+        
+        p->next = temp;     // change it next member point to address of new node have just create
+    }
+}
+```
+
+**Xóa node cuối cùng của list:**
+ 
+ ```bash
+void pop_back(node **array)
+{
+    node *p, *temp;
+    p = *array;
+    int i = 0; // to 
+
+    while (p->next != NULL)     // free the last node in the list
+    {
+        p = p->next;
+        i++;
+    }
+    free(p);
+
+    temp = *array;
+    int j;
+    for ( j = 0; j < i - 1 ; j++)    // change the next member of the node at the (last - 1) position to NULL
+    {
+        temp = temp->next;
+    }
+    
+    temp->next = NULL;
+}
+```
+</p>
+</details>
+
+# Bài 11: Stack - Queue
+<details><summary>Chi tiết</summary>   
+<p> 
+  
+## Stack
+<details><summary>Chi tiết</summary>   
+<p> 
+	
+**Stack (ngăn xếp)** là một cấu trúc dữ liệu tuân theo nguyên tắc "Last In, First Out" (LIFO), nghĩa là phần tử cuối cùng được thêm vào stack sẽ là phần tử đầu tiên được lấy ra. 
+**Các thao tác cơ bản trên stack bao gồm:**
++ “ push” (đẩy) để thêm một phần tử vào đỉnh của stack.
++ “ pop” để xóa một phần tử ở đỉnh stack.
++ “ top” để lấy giá trị của phần tử ở đỉnh stack.
++ 
+```bash
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Stack {
+    int* items;
+    int size;
+    int top;
+} Stack;
+
+void initialize( Stack *stack, int size) {
+    stack->items = (int*) malloc(sizeof(int) * size);
+    stack->size = size;
+    stack->top = -1;
+}
+
+int is_empty( Stack stack) {
+    return stack.top == -1;
+}
+
+int is_full( Stack stack) {
+    return stack.top == stack.size - 1;
+}
+
+void push( Stack *stack, int value) {
+    if (!is_full(*stack)) {
+        stack->items[++stack->top] = value;
+    } else {
+        printf("Stack overflow\n");
+    }
+}
+
+int pop( Stack *stack) {
+    if (!is_empty(*stack)) {
+        return stack->items[stack->top--];
+    } else {
+        printf("Stack underflow\n");
+        return -1;
+    }
+}
+
+int top( Stack stack) {
+    if (!is_empty(stack)) {
+        return stack.items[stack.top];
+    } else {
+        printf("Stack is empty\n");
+        return -1;
+    }
+}
+
+int main() {
+    Stack stack1;
+    initialize(&stack1, 5);
+
+
+    push(&stack1, 10);
+    push(&stack1, 20);
+    push(&stack1, 30);
+    push(&stack1, 40);
+    push(&stack1, 50);
+    push(&stack1, 60);
+
+    printf("Top element: %d\n", top(stack1));
+
+    printf("Pop element: %d\n", pop(&stack1));
+    printf("Pop element: %d\n", pop(&stack1));
+
+    printf("Top element: %d\n", top(stack1));
+
+    return 0;
+}
+
+```
+
+</p>
+</details>
+
+
+
+# Queue
+<details><summary>Chi tiết</summary>   
+<p> 
+  
+**Queue** là một cấu trúc dữ liệu tuân theo nguyên tắc "First In, First Out" (FIFO), nghĩa là phần tử đầu tiên được thêm vào hàng đợi sẽ là phần tử đầu tiên được lấy ra. 
+**Các thao tác cơ bản trên hàng đợi bao gồm:**
++ “enqueue” (thêm phần tử vào cuối hàng đợi)
++ “dequeue” (lấy phần tử từ đầu hàng đợi). 
++ “front” để lấy giá trị của phần tử đứng đầu hàng đợi.
+  
+```bash
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Queue {
+    int* items;
+    int size;
+    int front, rear;
+} Queue;
+
+void initialize(Queue *queue, int size) 
+{
+    queue->items = (int*) malloc(sizeof(int)* size);
+    queue->front = -1;
+    queue->rear = -1;
+    queue->size = size;
+}
+
+int is_empty(Queue queue) {
+    return queue.front == -1;
+}
+
+int is_full(Queue queue) {
+    return (queue.rear + 1) % queue.size == queue.front;
+}
+
+void enqueue(Queue *queue, int value) {
+    if (!is_full(*queue)) {
+        if (is_empty(*queue)) {
+            queue->front = queue->rear = 0;
+        } else {
+            queue->rear = (queue->rear + 1) % queue->size;
+        }
+        queue->items[queue->rear] = value;
+    } else {
+        printf("Queue overflow\n");
+    }
+}
+
+int dequeue(Queue *queue) {
+    if (!is_empty(*queue)) {
+        int dequeued_value = queue->items[queue->front];
+        if (queue->front == queue->rear) {
+            queue->front = queue->rear = -1;
+        } else {
+            queue->front = (queue->front + 1) % queue->size;
+        }
+        return dequeued_value;
+    } else {
+        printf("Queue underflow\n");
+        return -1;
+    }
+}
+
+int front(Queue queue) {
+    if (!is_empty(queue)) {
+        return queue.items[queue.front];
+    } else {
+        printf("Queue is empty\n");
+        return -1;
+    }
+}
+
+int main() {
+    Queue queue;
+    initialize(&queue, 3);
+
+    enqueue(&queue, 10);
+    enqueue(&queue, 20);
+    enqueue(&queue, 30);
+
+    printf("Front element: %d\n", front(queue));
+
+    printf("Dequeue element: %d\n", dequeue(&queue));
+    printf("Dequeue element: %d\n", dequeue(&queue));
+
+    printf("Front element: %d\n", front(queue));
+
+    enqueue(&queue, 40);
+    enqueue(&queue, 50);
+    printf("Dequeue element: %d\n", dequeue(&queue));
+    printf("Front element: %d\n", front(queue));
+
+    return 0;
+}
+```
+
+</p>
+</details>
+
+</p>
+</details>
+
+
+
 
 
 
